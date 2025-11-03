@@ -45,24 +45,38 @@ for (const city of cities) {
 }
 
 
-// Define separate stages for active/inactive shoppers
+//Define separate stages for active/inactive shoppers
 // const activeStages = [
-//     { target: 150, duration: '1m' },
-//     { target: 150, duration: '5m' },
-//     { target: 200, duration: '1m' },
-//     { target: 200, duration: '3m' },
-//     { target: 250, duration: '1m' },
-//     { target: 250, duration: '5m' },
-//     { target: 0, duration: '30s' },
+//     { target: 50, duration: '1m' },
+//     { target: 500, duration: '5m' },
+//     { target: 300, duration: '10m' },
+//     { target: 1000, duration: '2m' },
+//     { target: 300, duration: '9m' },
+//     { target: 500, duration: '2m' },
+//     { target: 0, duration: '1m' },
+// ];
+
+// const activeStages = [
+//     { target: 50, duration: '30s' },
+//     { target: 100, duration: '3m' },
+//     { target: 300, duration: '2m' },
+//     { target: 250, duration: '2m' },
+//     { target: 600, duration: '1m' },
+//     { target: 900, duration: '1m' },
+//     { target: 0, duration: '1m' },
 // ];
 
 const activeStages = [
+    { target: 50, duration: '30s' },
+    { target: 50, duration: '3m' },
+    { target: 50, duration: '2m' },
+    { target: 50, duration: '2m' },
     { target: 50, duration: '1m' },
-    { target: 100, duration: '5m' },
     { target: 50, duration: '1m' },
-    { target: 75, duration: '3m' },
-    { target: 0, duration: '30s' },
+    { target: 0, duration: '1m' },
 ];
+
+
 
 // const inactiveStages = [
 //     { target: 20, duration: '1m' },
@@ -73,7 +87,7 @@ const activeStages = [
 // ];
 
 const inactiveStages = [
-    { target: 20, duration: '10m' },
+    { target: 30, duration: '10m' },
     { target: 0, duration: '30s' },
 ];
 
@@ -93,7 +107,7 @@ export const options = {
                         startRate: 10,
                         timeUnit: '1s',
                         preAllocatedVUs: 10, //300
-                        maxVUs: 30, //500
+                        maxVUs: 20, //500
                         stages,
                         exec: 'scenarioExecutor',  // single shared executor function
                         env: { CITY: city, TYPE: type },  // pass city/type here
@@ -113,11 +127,7 @@ function activeLogic(shopper, city) {
     const res = http.get(`https://offering.us-central1.staging.shipt.com/v3/drivers/${shopper.shopper_id}/package_delivery/offers`,headers, {
         tags: { city, shopper_type: 'active' },
     });
-    sleep(5)
-    // check(res, {
-    //     'status is 200': (r) => r.status === 200,
-    //     'p99 < 500ms': (r) => r.timings.duration < 500,
-    // });
+    sleep(2)
 }
 
 // Shared logic for inactive shoppers
@@ -125,11 +135,7 @@ function inactiveLogic(shopper, city) {
     const res = http.get(`https://offering.us-central1.staging.shipt.com/v3/drivers/${shopper.shopper_id}/package_delivery/offers`, headers, {
         tags: { city, shopper_type: 'inactive' },
     });
-    sleep(5)
-    // check(res, {
-    //     'status is 200': (r) => r.status === 200,
-    //     'p99 < 500ms': (r) => r.timings.duration < 500,
-    // });
+    sleep(60)
 }
 
 // Shared scenario executor function (runs per iteration)
@@ -148,6 +154,6 @@ export function scenarioExecutor() {
     if (type === 'active') {
         activeLogic(shopper, city);
     } else {
-        inactiveLogic(shopper, city);
+       // inactiveLogic(shopper, city);
     }
 }
