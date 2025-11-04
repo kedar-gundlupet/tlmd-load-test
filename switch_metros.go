@@ -79,7 +79,7 @@ func main() {
 func makeHTTPRequest(workerID int, customerID string) {
 	url := fmt.Sprintf("https://shopper-profile.us-central1.staging.shipt.com/v2/shoppers/%s", customerID)
 	body := map[string]interface{}{
-		"metro_id": "124",
+		"metro_id": "3",
 	}
 	jsonBody, err := json.Marshal(body)
 	if err != nil {

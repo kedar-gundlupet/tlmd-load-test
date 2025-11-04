@@ -154,6 +154,6 @@ export function scenarioExecutor() {
     if (type === 'active') {
         activeLogic(shopper, city);
     } else {
-       // inactiveLogic(shopper, city);
+       inactiveLogic(shopper, city);
     }
 }
