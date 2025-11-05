@@ -85,9 +85,9 @@ export const options = {
             shopperTypes.map(type => {
                 const key = `${city}_${type}`;
                 const stages = type === 'active' ? activeStages : inactiveStages;
-                const maxVUs = type === 'active' ? 200 : 10;
+                const maxVUs = type === 'active' ? 50 : 10;
                 const preAllocVUs = type === 'active' ? 10 : 5;
-                const startRate = type === 'active' ? 200 : 10;
+                const startRate = type === 'active' ? 50 : 10;
 
 
                 return [
