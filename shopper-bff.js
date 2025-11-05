@@ -41,7 +41,6 @@ for (const city of cities) {
     }
 }
 
-
 //Define separate stages for active/inactive shoppers
 // const activeStages = [
 //     { target: 50, duration: '30s' },
@@ -53,7 +52,7 @@ for (const city of cities) {
 
 const activeStages = [
     // { target: 10, duration: '1m' },
-    { target: 50, duration: '4m' },
+    { target: 25, duration: '4m' },
     // { target: 150, duration: '1m' },
 ];
 
@@ -81,6 +80,7 @@ export const options = {
         cities.flatMap(city =>
             shopperTypes.map(type => {
                 const key = `${city}_${type}`;
+                // Below 4 are used only in ramping-arrival-rate.
                 const stages = type === 'active' ? activeStages : inactiveStages;
                 const maxVUs = type === 'active' ? 50 : 10;
                 const preAllocVUs = type === 'active' ? 10 : 5;
@@ -88,18 +88,37 @@ export const options = {
 
                 return [
                     key,
+                    //type,
                     {
-                        executor: 'constant-arrival-rate',
-                        rate: 25,              // 350 iterations per second (≈ 350 RPS)
-                        timeUnit: '1s',         // rate is per second
-                        duration: '4m',         // total test time: 4 minutes
-                        preAllocatedVUs: 50,   // pre-spawned virtual users
-                        maxVUs: 200,            // upper limit if requests take longer
-                        exec: 'scenarioExecutor',
+                        executor: 'ramping-arrival-rate',
+                        startRate: startRate,
+                        timeUnit: '1s',
+                        preAllocatedVUs: preAllocVUs,
+                        maxVUs: maxVUs,
+                        stages,
+                        exec: 'scenarioExecutor',  // single shared executor function
                         env: { CITY: city, TYPE: type },  // pass city/type here
-                        tags: {city, shopper_type: type,},
+                        tags: {
+                            city,
+                            shopper_type: type,
+                        },
                     },
                 ];
+
+                // return [
+                //     key,
+                //     {
+                //         executor: 'constant-arrival-rate',
+                //         rate: 25,              // RPS
+                //         timeUnit: '1s',         // rate is per second
+                //         duration: '4m',         // total test time: 4 minutes
+                //         preAllocatedVUs: 50,   // pre-spawned virtual users
+                //         maxVUs: 200,            // upper limit if requests take longer
+                //         exec: 'scenarioExecutor',
+                //         env: { CITY: city, TYPE: type },  // pass city/type here
+                //         tags: {city, shopper_type: type,},
+                //     },
+                // ];
             })
         )
     ),
@@ -118,7 +137,7 @@ function call(shopper, city) {
     }
 
     // call card-view for first 4
-    const groupOffers = offers.slice(0, 4);
+    const groupOffers = offers.slice(0, 2);
     const requests = groupOffers.map((offer) => ({
         method: 'GET',
         url: `${BASE_URL}/offering/v1/offers/${offer.order_bundle_id}/card-view`,
