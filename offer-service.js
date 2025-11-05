@@ -47,49 +47,35 @@ for (const city of cities) {
 
 //Define separate stages for active/inactive shoppers
 // const activeStages = [
-//     { target: 50, duration: '1m' },
-//     { target: 500, duration: '5m' },
-//     { target: 300, duration: '10m' },
-//     { target: 1000, duration: '2m' },
-//     { target: 300, duration: '9m' },
-//     { target: 500, duration: '2m' },
-//     { target: 0, duration: '1m' },
-// ];
-
-// const activeStages = [
 //     { target: 50, duration: '30s' },
-//     { target: 100, duration: '3m' },
-//     { target: 300, duration: '2m' },
-//     { target: 250, duration: '2m' },
-//     { target: 600, duration: '1m' },
-//     { target: 900, duration: '1m' },
-//     { target: 0, duration: '1m' },
-// ];
-
-const activeStages = [
-    { target: 50, duration: '30s' },
-    { target: 50, duration: '3m' },
-    { target: 50, duration: '2m' },
-    { target: 50, duration: '2m' },
-    { target: 50, duration: '1m' },
-    { target: 50, duration: '1m' },
-    { target: 0, duration: '1m' },
-];
-
-
-
-// const inactiveStages = [
-//     { target: 20, duration: '1m' },
-//     { target: 20, duration: '3m' },
-//     { target: 40, duration: '1m' },
-//     { target: 40, duration: '2m' },
+//     { target: 150, duration: '3m' },
+//     { target: 250, duration: '4m' },
+//     { target: 200, duration: '2m' },
 //     { target: 0, duration: '30s' },
 // ];
 
-const inactiveStages = [
-    { target: 30, duration: '10m' },
-    { target: 0, duration: '30s' },
+const activeStages = [
+    // { target: 10, duration: '1m' },
+    { target: 50, duration: '4m' },
+    // { target: 150, duration: '1m' },
 ];
+
+const inactiveStages = [
+    { target: 10, duration: '4m' },
+];
+
+// const inactiveStages = [
+//     { target: 20*60, duration: '10m' },
+//     { target: 0, duration: '30s' },
+// ];
+
+// const inactiveStages = [
+//     { target: 5, duration: '30s' },
+//     { target: 15, duration: '3m' },
+//     { target: 25, duration: '4m' },
+//     { target: 20, duration: '2m' },
+//     { target: 0, duration: '30s' },
+// ];
 
 
 // Build scenarios with env variables to pass city/type info
@@ -99,15 +85,20 @@ export const options = {
             shopperTypes.map(type => {
                 const key = `${city}_${type}`;
                 const stages = type === 'active' ? activeStages : inactiveStages;
+                const maxVUs = type === 'active' ? 200 : 10;
+                const preAllocVUs = type === 'active' ? 10 : 5;
+                const startRate = type === 'active' ? 200 : 10;
+
 
                 return [
                     key,
+                    //type,
                     {
                         executor: 'ramping-arrival-rate',
-                        startRate: 10,
+                        startRate: startRate,
                         timeUnit: '1s',
-                        preAllocatedVUs: 10, //300
-                        maxVUs: 20, //500
+                        preAllocatedVUs: preAllocVUs,
+                        maxVUs: maxVUs,
                         stages,
                         exec: 'scenarioExecutor',  // single shared executor function
                         env: { CITY: city, TYPE: type },  // pass city/type here
@@ -127,7 +118,7 @@ function activeLogic(shopper, city) {
     const res = http.get(`https://offering.us-central1.staging.shipt.com/v3/drivers/${shopper.shopper_id}/package_delivery/offers`,headers, {
         tags: { city, shopper_type: 'active' },
     });
-    sleep(2)
+    //sleep(2)
 }
 
 // Shared logic for inactive shoppers
@@ -135,7 +126,7 @@ function inactiveLogic(shopper, city) {
     const res = http.get(`https://offering.us-central1.staging.shipt.com/v3/drivers/${shopper.shopper_id}/package_delivery/offers`, headers, {
         tags: { city, shopper_type: 'inactive' },
     });
-    sleep(60)
+    sleep(5)
 }
 
 // Shared scenario executor function (runs per iteration)
@@ -152,8 +143,8 @@ export function scenarioExecutor() {
     const shopper = data[Math.floor(Math.random() * data.length)];
 
     if (type === 'active') {
-        activeLogic(shopper, city);
+      activeLogic(shopper, city);
     } else {
-       inactiveLogic(shopper, city);
+       //inactiveLogic(shopper, city);
     }
 }
