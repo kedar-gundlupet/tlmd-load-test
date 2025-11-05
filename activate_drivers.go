@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -59,7 +60,7 @@ func main() {
 			continue
 		}
 		shopperID := record[0]
-		shopeprChan <- shopperID
+		shopeprChan <- strings.ReplaceAll(shopperID, `\"`, "")
 	}
 
 	close(shopeprChan) // Close channel to signal workers to stop
