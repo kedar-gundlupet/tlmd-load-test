@@ -87,7 +87,7 @@ export const options = {
                 const stages = type === 'active' ? activeStages : inactiveStages;
                 const maxVUs = type === 'active' ? 50 : 10;
                 const preAllocVUs = type === 'active' ? 10 : 5;
-                const startRate = type === 'active' ? 50 : 10;
+                const startRate = type === 'active' ? 0 : 0;
 
 
                 return [
