@@ -6,12 +6,9 @@ import { SharedArray } from 'k6/data';
 // Define all cities and shopper types
 const cities = ['atlanta', 'chicago', 'dallas', 'detroit', 'houston', 'msp'];
 const shopperTypes = ['active', 'inactive'];
+const BASE_URL = 'https://shopper-bff-offering.us-central1.staging.shipt.com';
 
-const headers = {
-    headers: {
-        'X-Shipt-Identifier': 'shopper-bff'
-    },
-};
+const HEADERS = { 'x-user-type': 'Driver' };
 
 // Load shopper data from CSVs into a lookup object
 const shopperData = {};
@@ -93,7 +90,7 @@ export const options = {
                     key,
                     {
                         executor: 'constant-arrival-rate',
-                        rate: 50,              // 350 iterations per second (≈ 350 RPS)
+                        rate: 25,              // 350 iterations per second (≈ 350 RPS)
                         timeUnit: '1s',         // rate is per second
                         duration: '4m',         // total test time: 4 minutes
                         preAllocatedVUs: 50,   // pre-spawned virtual users
@@ -103,45 +100,35 @@ export const options = {
                         tags: {city, shopper_type: type,},
                     },
                 ];
-
-
-                // return [
-                //     key,
-                //     //type,
-                //     {
-                //         executor: 'ramping-arrival-rate',
-                //         startRate: startRate,
-                //         timeUnit: '1s',
-                //         preAllocatedVUs: preAllocVUs,
-                //         maxVUs: maxVUs,
-                //         stages,
-                //         exec: 'scenarioExecutor',  // single shared executor function
-                //         env: { CITY: city, TYPE: type },  // pass city/type here
-                //         tags: {
-                //             city,
-                //             shopper_type: type,
-                //         },
-                //     },
-                // ];
             })
         )
     ),
 };
 
-// Shared logic for active shoppers
-function activeLogic(shopper, city) {
-    const res = http.get(`https://offering.us-central1.staging.shipt.com/v3/drivers/${shopper.shopper_id}/package_delivery/offers`,headers, {
-        tags: { city, shopper_type: 'active' },
-    });
-    //sleep(2)
-}
+function call(shopper, city) {
+    HEADERS['x-user-id'] = shopper.shopper_id;
+    let res = http.get(`${BASE_URL}/offering/v1/offers/driver`, { headers: HEADERS });
+    check(res, { 'got offers': (r) => r.status === 200 });
 
-// Shared logic for inactive shoppers
-function inactiveLogic(shopper, city) {
-    const res = http.get(`https://offering.us-central1.staging.shipt.com/v3/drivers/${shopper.shopper_id}/package_delivery/offers`, headers, {
-        tags: { city, shopper_type: 'inactive' },
-    });
-    sleep(5)
+    let offers = [];
+    try {
+        offers = res.json('offers') || [];
+    } catch (e) {
+        offers = [];
+    }
+
+    // call card-view for first 4
+    const groupOffers = offers.slice(0, 4);
+    const requests = groupOffers.map((offer) => ({
+        method: 'GET',
+        url: `${BASE_URL}/offering/v1/offers/${offer.order_bundle_id}/card-view`,
+        params: { headers: HEADERS }
+    }));
+
+    const responses = http.batch(requests);
+    for (const resp of responses) {
+        check(resp, { 'card-view 200': (r) => r.status === 200 });
+    }
 }
 
 // Shared scenario executor function (runs per iteration)
@@ -158,8 +145,8 @@ export function scenarioExecutor() {
     const shopper = data[Math.floor(Math.random() * data.length)];
 
     if (type === 'active') {
-      activeLogic(shopper, city);
+        call(shopper, city);
     } else {
-       //inactiveLogic(shopper, city);
+        //call(shopper, city);
     }
 }
