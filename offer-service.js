@@ -89,25 +89,37 @@ export const options = {
                 const preAllocVUs = type === 'active' ? 10 : 5;
                 const startRate = type === 'active' ? 0 : 0;
 
-
                 return [
                     key,
-                    //type,
-                    {
-                        executor: 'ramping-arrival-rate',
-                        startRate: startRate,
-                        timeUnit: '1s',
-                        preAllocatedVUs: preAllocVUs,
-                        maxVUs: maxVUs,
-                        stages,
-                        exec: 'scenarioExecutor',  // single shared executor function
-                        env: { CITY: city, TYPE: type },  // pass city/type here
-                        tags: {
-                            city,
-                            shopper_type: type,
-                        },
-                    },
-                ];
+                     {
+                    executor: 'constant-arrival-rate',
+                        rate: 50,              // 350 iterations per second (≈ 350 RPS)
+                        timeUnit: '1s',         // rate is per second
+                        duration: '4m',         // total test time: 4 minutes
+                        preAllocatedVUs: 50,   // pre-spawned virtual users
+                        maxVUs: 200,            // upper limit if requests take longer
+                },
+                ]
+
+
+                // return [
+                //     key,
+                //     //type,
+                //     {
+                //         executor: 'ramping-arrival-rate',
+                //         startRate: startRate,
+                //         timeUnit: '1s',
+                //         preAllocatedVUs: preAllocVUs,
+                //         maxVUs: maxVUs,
+                //         stages,
+                //         exec: 'scenarioExecutor',  // single shared executor function
+                //         env: { CITY: city, TYPE: type },  // pass city/type here
+                //         tags: {
+                //             city,
+                //             shopper_type: type,
+                //         },
+                //     },
+                // ];
             })
         )
     ),
