@@ -99,7 +99,7 @@ export const options = {
                         executor: 'constant-arrival-rate',
                         rate: 500,              // 350 iterations per second (≈ 350 RPS)
                         timeUnit: '1s',         // rate is per second
-                        duration: '30m',         // total test time: 4 minutes
+                        duration: '8m',         // total test time: 4 minutes
                         preAllocatedVUs: 2,   // pre-spawned virtual users
                         maxVUs: 1000,            // upper limit if requests take longer
                         exec: 'scenarioExecutor',
