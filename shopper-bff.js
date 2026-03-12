@@ -51,13 +51,14 @@ for (const city of cities) {
 // ];
 
 const activeStages = [
-    // { target: 10, duration: '1m' },
-    { target: 25, duration: '4m' },
-    // { target: 150, duration: '1m' },
+    { target: 10, duration: '6m' },
+    { target: 40, duration: '10m' },
+    { target: 50, duration: '6m' },
+    { target: 25, duration: '8m' },
 ];
 
 const inactiveStages = [
-    { target: 10, duration: '4m' },
+    { target: 1, duration: '30m' }
 ];
 
 // const inactiveStages = [
@@ -82,7 +83,7 @@ export const options = {
                 const key = `${city}_${type}`;
                 // Below 4 are used only in ramping-arrival-rate.
                 const stages = type === 'active' ? activeStages : inactiveStages;
-                const maxVUs = type === 'active' ? 50 : 10;
+                const maxVUs = type === 'active' ? 20 : 10;
                 const preAllocVUs = type === 'active' ? 10 : 5;
                 const startRate = type === 'active' ? 0 : 0;
 
@@ -166,6 +167,6 @@ export function scenarioExecutor() {
     if (type === 'active') {
         call(shopper, city);
     } else {
-        //call(shopper, city);
+        call(shopper, city);
     }
 }

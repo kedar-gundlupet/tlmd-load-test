@@ -10,7 +10,7 @@ export const options = {
 // Shared arrays (in-memory for single script)
 let shoppersData = new SharedArray('shoppersData', function () {
     // Load shopper data from a CSV file
-    return open('./shoppers.csv').split('\n').slice(1).map(line => line.split(','));
+    return open('./prod_drivers.csv').split('\n').slice(1).map(line => line.split(','));
 });
 
 export default function() {
@@ -23,7 +23,7 @@ export default function() {
     let shopper = shoppersData[shopperIdx];
     let shopperId = shopper[0].replace(/"/g, '');
     let profileUpdatePayload = JSON.stringify({
-        metro_id: '116',
+        metro_id: '79',
     });
     let profileUrl = `${shopperProfileHost}/v2/shoppers/${shopperId}`;
     // console.log(`PATCH ${profileUrl}`);

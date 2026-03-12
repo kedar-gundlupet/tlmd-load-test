@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	vehicleWorkers = 3 // Number of goroutines
-	vehicleDrivers = "data/houston_active.csv"
+	vehicleWorkers = 10 // Number of goroutines
+	vehicleDrivers = "data/chicago_inactive.csv"
 )
 
 func main() {

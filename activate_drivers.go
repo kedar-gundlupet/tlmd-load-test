@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	activateWorkers = 50 // Number of goroutines
-	activateCsvFile = "./data/chicago_active.csv"
+	activateWorkers = 12 // Number of goroutines
+	activateCsvFile = "./prod_drivers.csv"
 )
 
 func main() {
@@ -69,6 +69,7 @@ func main() {
 
 // makeHTTPRequest simulates making a GET request for the customer ID
 func activateDrivers(workerID int, customerID string) {
+	//customerID = "234786"
 	url := fmt.Sprintf("https://offering.us-central1.staging.shipt.com/v3/drivers/%s/package_delivery/offers", customerID)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
