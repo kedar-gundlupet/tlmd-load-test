@@ -97,7 +97,7 @@ export const options = {
                     key,
                     {
                         executor: 'constant-arrival-rate',
-                        rate: 300,              // 350 iterations per second (≈ 350 RPS)
+                        rate: 450,              // 350 iterations per second (≈ 350 RPS)
                         timeUnit: '1s',         // rate is per second
                         duration: '8m',         // total test time: 4 minutes
                         preAllocatedVUs: 2,   // pre-spawned virtual users
