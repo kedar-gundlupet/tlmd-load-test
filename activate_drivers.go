@@ -84,5 +84,5 @@ func activateDrivers(workerID int, customerID string) {
 		return
 	}
 	defer resp.Body.Close()
-	log.Printf("[Worker %d] Fetched data for customer %s (status: %s)", workerID, customerID, resp.Status)
+	//log.Printf("[Worker %d] Fetched data for customer %s (status: %s)", workerID, customerID, resp.Status)
 }
