@@ -101,7 +101,7 @@ export const options = {
                         timeUnit: '1s',         // rate is per second
                         duration: '7m',         // total test time: 4 minutes
                         preAllocatedVUs: 2,   // pre-spawned virtual users
-                        maxVUs: 1000,            // upper limit if requests take longer
+                        maxVUs: 3000,            // upper limit if requests take longer
                         exec: 'scenarioExecutor',
                         env: { CITY: city, TYPE: type },  // pass city/type here
                         tags: {city, shopper_type: type,},
