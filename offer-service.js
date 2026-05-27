@@ -97,11 +97,11 @@ export const options = {
                     key,
                     {
                         executor: 'constant-arrival-rate',
-                        rate: 1000,              // 350 iterations per second (≈ 350 RPS)
+                        rate: 450,              // 350 iterations per second (≈ 350 RPS)
                         timeUnit: '1s',         // rate is per second
                         duration: '7m',         // total test time: 4 minutes
                         preAllocatedVUs: 2,   // pre-spawned virtual users
-                        maxVUs: 5000,            // upper limit if requests take longer
+                        maxVUs: 1000,            // upper limit if requests take longer
                         exec: 'scenarioExecutor',
                         env: { CITY: city, TYPE: type },  // pass city/type here
                         tags: {city, shopper_type: type,},
